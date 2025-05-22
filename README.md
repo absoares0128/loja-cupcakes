@@ -1,10 +1,6 @@
-# Projeto Cupcake Shop
+# Projeto Loja de Cupcakes
 
-Neste projeto foi desenvolvido uma loja virtual de venda de cupcakes usando todo conhecimento adiquirido durante os semestres no curso de Engenharia de Software.
-
-Matéria: Projeto Integrador Transdisciplinar em Engenharia de Software II.
-
-Universidade Cruzeiro do Sul
+Projeto desenvolvido de uma loja virtual de venda de cupcakes - Atividade da disciplina Projeto Integrador Transdisciplinar II do curso de de Engenharia de Software da Universidade Cruzeiro do Sul.
 
 ## 📋 Tecnologias Usadas
 
