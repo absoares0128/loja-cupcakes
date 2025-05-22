@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Pedido</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo da Loja de Cupcakes">
+        </div>
+    </header>
+    <main>
+        <h1 class="cart-title">Detalhes do Pedido</h1>
+        
+        <!-- Caixa de Pesquisa -->
+        <div class="search-box">
+            <form onsubmit="searchOrder(event)">
+                <input type="text" id="search-name" placeholder="Digite o nome completo para buscar o pedido" required>
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+
+        <br><br>
+
+        <!-- Área para exibição do pedido -->
+        <div id="order-details" class="cart-container">
+            <!-- Dados do pedido serão exibidos aqui -->
+        </div>
+
+        <!-- Botão Voltar ao Início -->
+        <div class="back-to-home">
+            <a href="index.html" onclick="clearCart()">
+                <button>Voltar ao Início</button>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Função para limpar o carrinho ao voltar ao início
+        function clearCart() {
+            localStorage.removeItem('cart');  // Limpa os itens do carrinho
+            localStorage.removeItem('orderData');  // Limpa os dados do pedido finalizado
+        }
+
+        // Função para buscar e exibir o pedido com base no nome fornecido
+        function searchOrder(event) {
+            event.preventDefault();
+            const searchName = document.getElementById('search-name').value.trim().toLowerCase();
+            const orderData = JSON.parse(localStorage.getItem('orderData'));
+
+            const orderDetails = document.getElementById('order-details');
+            if (!orderData || !orderData.name.toLowerCase().includes(searchName)) {
+                orderDetails.innerHTML = '<p>Pedido não encontrado. Verifique o nome e tente novamente.</p>';
+                return;
+            }
+
+            // Exibir os detalhes do pedido encontrado
+            orderDetails.innerHTML = `
+                <h2>Pedido Nº ${orderData.orderNumber}</h2>
+                <p><strong>Nome:</strong> ${orderData.name}</p>
+                <p><strong>Telefone:</strong> ${orderData.phone}</p>
+                <p><strong>Endereço:</strong> ${orderData.address}</p>
+                <p><strong>CEP:</strong> ${orderData.cep}</p>
+                <p><strong>Ponto de Referência:</strong> ${orderData.reference || 'Não informado'}</p>
+                <p><strong>Total da Compra:</strong> R$ ${orderData.totalAmount.toFixed(2)}</p>
+                ${orderData.cashAmount ? `
+                    <p><strong>Valor da Nota:</strong> R$ ${orderData.cashAmount.toFixed(2)}</p>
+                    <p><strong>Troco:</strong> R$ ${orderData.change.toFixed(2)}</p>
+                ` : ''}
+            `;
+        }
+
+        // Função para carregar automaticamente o pedido mais recente
+        function loadLatestOrder() {
+            const orderData = JSON.parse(localStorage.getItem('orderData'));
+            const orderDetails = document.getElementById('order-details');
+
+            if (!orderData) {
+                orderDetails.innerHTML = '<p>Não há informações do pedido. Faça um pedido primeiro!</p>';
+                return;
+            }
+
+            // Exibir os detalhes do pedido encontrado
+            orderDetails.innerHTML = `
+                <h2>Pedido Nº ${orderData.orderNumber}</h2>
+                <p><strong>Nome:</strong> ${orderData.name}</p>
+                <p><strong>Telefone:</strong> ${orderData.phone}</p>
+                <p><strong>Endereço:</strong> ${orderData.address}</p>
+                <p><strong>CEP:</strong> ${orderData.cep}</p>
+                <p><strong>Ponto de Referência:</strong> ${orderData.reference || 'Não informado'}</p>
+                <p><strong>Total da Compra:</strong> R$ ${orderData.totalAmount.toFixed(2)}</p>
+                ${orderData.cashAmount ? `
+                    <p><strong>Valor da Nota:</strong> R$ ${orderData.cashAmount.toFixed(2)}</p>
+                    <p><strong>Troco:</strong> R$ ${orderData.change.toFixed(2)}</p>
+                ` : ''}
+            `;
+        }
+
+        // Carregar os dados do pedido mais recente ao abrir a página
+        window.onload = loadLatestOrder;
+    </script>
+</body>
+</html>

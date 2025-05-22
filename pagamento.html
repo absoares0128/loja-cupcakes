@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="back-button">
+            <a href="carrinho.html">
+                <img src="voltar.png" alt="Voltar">
+            </a>
+        </div>
+        <div class="logo">
+            <img src="logo.png" alt="Logo da Loja de Cupcakes">
+        </div>
+    </header>
+    <main>
+        <h1 class="cart-title">Resumo do Pedido</h1>
+        <div id="cart-summary" class="cart-container">
+            <!-- Os itens do carrinho serão exibidos aqui -->
+        </div>
+        <h2 class="cart-total">Total: R$ <span id="total-price">0.00</span></h2>
+
+        <div class="payment-options">
+            <h2>Escolha a forma de pagamento:</h2>
+            <div class="options">
+                <div class="payment-option" onclick="openDeliveryForm('pix')">
+                    <img src="pix.png" alt="Pagamento via Pix">
+                    <p>Pix</p>
+                </div>
+                <div class="payment-option" onclick="openDeliveryForm('dinheiro')">
+                    <img src="dinheiro.png" alt="Pagamento em Dinheiro">
+                    <p>Dinheiro</p>
+                </div>
+                <div class="payment-option" onclick="openDeliveryForm('cartao')">
+                    <img src="cartao.png" alt="Pagamento via Cartão">
+                    <p>Cartão</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Formulário de Entrega -->
+    <div id="delivery-form-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Informações de Entrega</h2>
+            <label for="full-name">Nome Completo</label>
+            <input type="text" id="full-name" placeholder="Digite seu nome completo" required>
+            <label for="phone">Telefone para Contato</label>
+            <input type="tel" id="phone" placeholder="(XX) XXXXX-XXXX" required>
+            <label for="address">Endereço</label>
+            <input type="text" id="address" placeholder="Digite seu endereço completo" required>
+            <label for="cep">CEP</label>
+            <input type="text" id="cep" placeholder="Digite seu CEP" required>
+            <label for="reference">Ponto de Referência</label>
+            <input type="text" id="reference" placeholder="Ponto de referência (opcional)">
+            <div class="modal-buttons">
+                <button onclick="proceedToPayment()">Finalizar Pagamento</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Cartão de Crédito -->
+    <div id="card-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Pagamento com Cartão de Crédito</h2>
+            <label for="card-name">Nome no Cartão</label>
+            <input type="text" id="card-name" placeholder="Digite o nome no cartão" required>
+            <label for="card-number">Número do Cartão</label>
+            <input type="text" id="card-number" placeholder="Digite 16 dígitos" maxlength="16" pattern="\d*" required>
+            <label for="card-cvc">CVC</label>
+            <input type="text" id="card-cvc" placeholder="CVC (3 dígitos)" maxlength="3" pattern="\d*" required>
+            <label for="card-expiry">Validade</label>
+            <input type="text" id="card-expiry" placeholder="MM/AA" required>
+            <div class="modal-buttons">
+                <button onclick="finalizeCashPayment()">Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Troco (Dinheiro) -->
+    <div id="cash-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Troco para quanto?</h2>
+            <label for="cash-amount">Valor da Nota (em R$)</label>
+            <input type="number" id="cash-amount" placeholder="Digite o valor em reais" required>
+            <div class="modal-buttons">
+                <button onclick="finalizeCashPayment()">Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de QR Code (Pix) -->
+    <div id="pix-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Pagamento via Pix</h2>
+            <img src="qr-code.png" alt="QR Code Pix">
+            <div class="modal-buttons">
+                <button onclick="finalizeCashPayment()">Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let paymentMethod = ''; // Guarda o método de pagamento escolhido
+        let totalAmount = 0; // Valor total da compra
+
+        // Carregar resumo do carrinho
+        function loadCartSummary() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartSummary = document.getElementById('cart-summary');
+            const totalPriceElement = document.getElementById('total-price');
+            totalAmount = 0;
+
+            cartSummary.innerHTML = '';
+            cart.forEach(item => {
+                totalAmount += item.total;
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('cart-item');
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div>
+                        <h2>${item.name}</h2>
+                        <p>Quantidade: ${item.quantity}</p>
+                        <p>Preço Unitário: R$ ${item.price.toFixed(2)}</p>
+                        <p>Total: R$ ${item.total.toFixed(2)}</p>
+                    </div>
+                `;
+                cartSummary.appendChild(itemElement);
+            });
+
+            totalPriceElement.innerText = totalAmount.toFixed(2);
+        }
+
+        // Abrir formulário de entrega
+        function openDeliveryForm(method) {
+            paymentMethod = method;
+            document.getElementById('delivery-form-modal').classList.remove('hidden');
+        }
+
+        // Prosseguir para o pagamento
+        function proceedToPayment() {
+            const form = {
+                name: document.getElementById('full-name').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                cep: document.getElementById('cep').value,
+                reference: document.getElementById('reference').value
+            };
+
+            if (!form.name || !form.phone || !form.address || !form.cep) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+
+            // Salvar os dados de entrega no localStorage
+            localStorage.setItem('deliveryInfo', JSON.stringify(form));
+
+            document.getElementById('delivery-form-modal').classList.add('hidden');
+
+            if (paymentMethod === 'pix') {
+                // Abrir o modal de Pix 
+                document.getElementById('pix-modal').classList.remove('hidden');
+            } else if (paymentMethod === 'dinheiro') {
+                // Abrir o modal de troco
+                document.getElementById('cash-modal').classList.remove('hidden');
+            } else if (paymentMethod === 'cartao') {
+                // Abrir o modal de cartao
+                document.getElementById('card-modal').classList.remove('hidden');
+        }
+    }
+
+        // Finalizar pagamento em dinheiro
+        function finalizeCashPayment() {
+            const cashAmount = parseFloat(document.getElementById('cash-amount').value);
+
+            if (cashAmount < totalAmount) {
+                alert('O valor da nota deve ser maior ou igual ao total da compra.');
+                return;
+            }
+
+            const change = cashAmount - totalAmount;
+            const deliveryInfo = JSON.parse(localStorage.getItem('deliveryInfo'));
+            const orderNumber = Math.floor(100000 + Math.random() * 900000); // Número de pedido aleatório
+
+            // Salvar dados do pedido no localStorage
+            const orderData = { ...deliveryInfo, orderNumber, totalAmount, cashAmount, change };
+            localStorage.setItem('orderData', JSON.stringify(orderData));
+
+            // Redirecionar para a página de frete
+            window.location.href = 'frete.html';
+        }
+
+        // Carregar carrinho ao iniciar
+        window.onload = loadCartSummary;
+    </script>
+</body>
+</html>

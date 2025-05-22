@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Cupcakes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <!-- Botão de voltar -->
+        <div class="back-button">
+            <a href="index.html">
+                <img src="voltar.png" alt="Voltar">
+            </a>
+        </div>
+
+        <!-- Logo -->
+        <div class="logo">
+            <img src="logo.png" alt="Logo da Loja de Cupcakes">
+        </div>
+
+        <!-- Carrinho de Compras -->
+        <div class="cart">
+            <a href="carrinho.html">
+                <img src="carrinho.png" alt="Carrinho de Compras">
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <h1 class="catalog-title">Catálogo de Cupcakes</h1>
+        <div class="catalog">
+            <!-- Item 1 -->
+            <div class="item" id="item1">
+                <img src="cupcake1.png" alt="Cupcake de Chocolate">
+                <h2>Cupcake de Chocolate</h2>
+                <p>Delicioso cupcake de chocolate com cobertura cremosa.</p>
+                <br>
+                <p><strong>R$ 5,00</strong></p>
+                <br>
+                <button onclick="addToCart('CUP001', 'Cupcake de Chocolate', 'cupcake1.png', 5)">Adicionar ao Carrinho</button>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="item" id="item2">
+                <img src="cupcake2.png" alt="Cupcake de Baunilha">
+                <h2>Cupcake de Baunilha</h2>
+                <p>Fofinho cupcake de baunilha com glacê colorido.</p>
+                <br>
+                <p><strong>R$ 6,00</strong></p>
+                <br>
+                <button onclick="addToCart('CUP002', 'Cupcake de Baunilha', 'cupcake2.png', 6)">Adicionar ao Carrinho</button>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="item" id="item3">
+                <img src="cupcake3.png" alt="Cupcake de Red Velvet">
+                <h2>Cupcake de Red Velvet</h2>
+                <p>Com textura leve, macia e com o travozinho ácido que o caracteriza .</p>
+                <br>
+                <p><strong>R$ 6,00</strong></p>
+                <br>
+                <button onclick="addToCart('CUP003', 'Cupcake de Red Velvet', 'cupcake3.png', 6)">Adicionar ao Carrinho</button>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="item" id="item4">
+                <img src="cupcake4.png" alt="Cupcake de Limão">
+                <h2>Cupcake de Limão</h2>                
+                <p>Um toque citrico e doce para levar seu paladar a loucura.</p>
+                <br>
+                <p><strong>R$ 6,00</strong></p>
+                <br>
+                <button onclick="addToCart('CUP004', 'Cupcake de Limão', 'cupcake4.png', 6)">Adicionar ao Carrinho</button>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="item" id="item5">
+                <img src="cupcake5.png" alt="Cupcake de Morango">
+                <h2>Cupcake de Morango</h2>
+                <p>Experimente o sabor irregistivel do cupcake de morango.</p>
+                <br>
+                <p><strong>R$ 6,00</strong></p>
+                <br>
+                <button onclick="addToCart('CUP005', 'Cupcake de Morango', 'cupcake5.png', 6)">Adicionar ao Carrinho</button>
+            </div>
+
+            <!-- Outros itens seguem o mesmo formato -->
+        </div>
+
+        <!-- Botão de Finalizar Pedido -->
+        <div class="cart-actions">
+            <button onclick="window.location.href='carrinho.html'">Ir para o Carrinho</button>
+        </div>
+    </main>
+
+    <script>
+        // Adiciona um item ao carrinho e salva no LocalStorage
+        function addToCart(id, name, image, price) {
+            const quantity = parseInt(prompt("Informe a quantidade desejada:")) || 1;
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingItem = cart.find(item => item.id === id);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+                existingItem.total = existingItem.quantity * existingItem.price;
+            } else {
+                cart.push({
+                    id,
+                    name,
+                    image,
+                    price,
+                    quantity,
+                    total: price * quantity
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${quantity} unidade(s) de ${name} foram adicionadas ao carrinho!`);
+        }
+    </script>
+</body>
+</html>
+

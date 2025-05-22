@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalizar Cupcake</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="back-button">
+            <a href="index.html">
+                <img src="voltar.png" alt="Voltar">
+            </a>
+        </div>
+        <div class="logo">
+            <img src="logo.png" alt="Logo da Loja de Cupcakes">
+        </div>
+    </header>
+    <main>
+        <h1 class="catalog-title">Personalize seu Cupcake</h1>
+        <form id="customize-form" class="cart-container">
+            <label for="massa">Escolha a Massa:</label>
+            <select id="massa" required class="custom-select">
+                <option value="morango">Morango</option>
+                <option value="baunilha">Baunilha</option>
+                <option value="chocolate">Chocolate</option>
+            </select>
+
+            <label for="cobertura">Escolha a Cobertura:</label>
+            <select id="cobertura" required class="custom-select">
+                <option value="morango">Morango</option>
+                <option value="baunilha">Baunilha</option>
+                <option value="chocolate">Chocolate</option>
+            </select>
+
+            <label for="recheio">Escolha o Recheio:</label>
+            <select id="recheio" required class="custom-select">
+                <option value="morango">Morango</option>
+                <option value="baunilha">Baunilha</option>
+                <option value="chocolate">Chocolate</option>
+            </select>
+
+            <div class="form-buttons">
+                <button type="button" onclick="checkCustomization()" class="customize-btn">Confirmar Personalização</button>
+                <a href="carrinho.html" class="customize-btn">Ir para o Carrinho</a>
+            </div>
+        </form>
+
+        <!-- Modal para Cupcake -->
+        <div id="custom-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="custom-title"></h2>
+                <img id="custom-image" src="" alt="Cupcake">
+                <label for="quantity">Quantidade:</label>
+                <input type="number" id="quantity" value="1" min="1" class="custom-input">
+                <div class="modal-buttons">
+                    <button onclick="addToCart()" class="customize-btn">Adicionar ao Carrinho</button>
+                    <button onclick="closeModal()" class="customize-btn">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Verificar Personalização
+        function checkCustomization() {
+            const massa = document.getElementById('massa').value;
+            const cobertura = document.getElementById('cobertura').value;
+            const recheio = document.getElementById('recheio').value;
+
+            // Identificar o cupcake com base na personalização
+            if (massa === 'morango' && cobertura === 'morango' && recheio === 'morango') {
+                showModal('Cupcake de Morango', 'cupcake5.png');
+            } else if (massa === 'chocolate' && cobertura === 'chocolate' && recheio === 'chocolate') {
+                showModal('Cupcake de Chocolate', 'cupcake1.png');
+            } else if (massa === 'baunilha' && cobertura === 'baunilha' && recheio === 'baunilha') {
+                showModal('Cupcake de Baunilha', 'cupcake2.png');
+            } else {
+                alert('Não temos essa combinação disponível. Por favor, selecione outra.');
+            }
+        }
+
+        // Mostrar Modal para o Cupcake
+        function showModal(title, image) {
+            document.getElementById('custom-title').innerText = title;
+            document.getElementById('custom-image').src = image;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        // Adicionar ao Carrinho
+        function addToCart() {
+            const title = document.getElementById('custom-title').innerText;
+            const image = document.getElementById('custom-image').src;
+            const quantity = parseInt(document.getElementById('quantity').value);
+
+            if (quantity <= 0) {
+                alert('A quantidade deve ser maior que zero!');
+                return;
+            }
+
+            // Obter o carrinho atual
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            // Adicionar o item personalizado
+            cart.push({
+                name: title,
+                image: image,
+                price: 5.00, // Exemplo de preço fixo
+                quantity: quantity,
+                total: quantity * 5.00
+            });
+
+            // Salvar no localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Fechar modal e resetar a personalização
+            closeModal();
+            resetCustomization();
+        }
+
+        // Fechar Modal
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        // Resetar Formulário
+        function resetCustomization() {
+            document.getElementById('customize-form').reset();
+        }
+    </script>
+</body>
+</html>
